@@ -57,4 +57,33 @@ public class ValueCallbacks {
 			this.result = reader.read(this.builder);
 		}
 	}
+	
+	public static class AnyCallback extends ValueCallback {
+		public Object result;
+		@Override
+		public void hitBoolean(boolean value) {
+			this.result = value;
+		}
+		@Override
+		public void hitInt(long value) {
+			this.result = value;
+		}
+		@Override
+		public void hitFloat(double value) {
+			this.result = value;
+		}
+		@Override
+		public void hitString(String value) {
+			this.result = value;
+		}
+		@Override
+		public void hitArray(ArrayReader reader) throws IOException {
+			this.result = reader.read(CommonCommands.OBJECT_LIST);
+		}
+		@Override
+		public void hitObject(ObjectReader reader) throws IOException {
+			this.result = reader.read(CommonCommands.MAP_OBJECT);
+		}
+	}
+	
 }

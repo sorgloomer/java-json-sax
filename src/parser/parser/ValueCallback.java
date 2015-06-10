@@ -41,6 +41,11 @@ public class ValueCallback {
 		reader.readValue(cb);
 		return cb.result;
 	}
+	public static Object getAny(JsonSaxReader reader) throws IOException {
+		ValueCallbacks.AnyCallback cb = new ValueCallbacks.AnyCallback();
+		reader.readValue(cb);
+		return cb.result;
+	}
 	
 	public static <T> T getObject(JsonSaxReader reader, ObjectBuilder<T, ?> builder) throws IOException {
 		ValueCallbacks.ObjectCallback<T> cb = new ValueCallbacks.ObjectCallback<>(builder);
