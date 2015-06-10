@@ -3,7 +3,7 @@ package parser.test;
 import java.io.IOException;
 
 import parser.ArrayReader;
-import parser.Helper;
+import parser.CommonCommands;
 import parser.ObjectBuilder;
 
 public class Person {
@@ -34,7 +34,7 @@ public class Person {
 		
 		@Override
 		public void hitArray(Person obj, String key, ArrayReader reader) throws IOException {
-			obj.histo = reader.read(Helper.INT_ARRAY);
+			obj.histo = reader.read(CommonCommands.INTS);
 		}
 		
 		@Override
