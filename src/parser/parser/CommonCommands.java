@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CommonCommands {
+	public static final int INITIAL_CAPACITY = 32;
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T[] toArray(List<T> list, Class<T> clazz) {
@@ -20,7 +21,7 @@ public class CommonCommands {
 	public static final ArrayBuilder<int[], PrimitiveLists.Int> INTS = new ArrayBuilder<int[], PrimitiveLists.Int>(){
 		@Override
 		public PrimitiveLists.Int begin() {
-			return new PrimitiveLists.Int(32);
+			return new PrimitiveLists.Int(INITIAL_CAPACITY);
 		}
 		@Override
 		public void hitInt(PrimitiveLists.Int obj, long value) {
@@ -34,7 +35,7 @@ public class CommonCommands {
 	public static final ArrayBuilder<long[], PrimitiveLists.Long> LONGS = new ArrayBuilder<long[], PrimitiveLists.Long>(){
 		@Override
 		public PrimitiveLists.Long begin() {
-			return new PrimitiveLists.Long(32);
+			return new PrimitiveLists.Long(INITIAL_CAPACITY);
 		}
 		@Override
 		public void hitInt(PrimitiveLists.Long obj, long value) {
@@ -48,7 +49,11 @@ public class CommonCommands {
 	public static final ArrayBuilder<float[], PrimitiveLists.Float> FLOATS = new ArrayBuilder<float[], PrimitiveLists.Float>(){
 		@Override
 		public PrimitiveLists.Float begin() {
-			return new PrimitiveLists.Float(32);
+			return new PrimitiveLists.Float(INITIAL_CAPACITY);
+		}
+		@Override
+		public void hitInt(PrimitiveLists.Float obj, long value) {
+			obj.append(value);
 		}
 		@Override
 		public void hitFloat(PrimitiveLists.Float obj, double value) {
@@ -62,7 +67,11 @@ public class CommonCommands {
 	public static final ArrayBuilder<double[], PrimitiveLists.Double> DOUBLES = new ArrayBuilder<double[], PrimitiveLists.Double>(){
 		@Override
 		public PrimitiveLists.Double begin() {
-			return new PrimitiveLists.Double(32);
+			return new PrimitiveLists.Double(INITIAL_CAPACITY);
+		}
+		@Override
+		public void hitInt(PrimitiveLists.Double obj, long value) {
+			obj.append(value);
 		}
 		@Override
 		public void hitFloat(PrimitiveLists.Double obj, double value) {
@@ -76,7 +85,7 @@ public class CommonCommands {
 	public static final ArrayBuilder<boolean[], PrimitiveLists.Bool> BOOLEANS = new ArrayBuilder<boolean[], PrimitiveLists.Bool>(){
 		@Override
 		public PrimitiveLists.Bool begin() {
-			return new PrimitiveLists.Bool(32);
+			return new PrimitiveLists.Bool(INITIAL_CAPACITY);
 		}
 		@Override
 		public void hitBoolean(PrimitiveLists.Bool obj, boolean value) {
@@ -90,7 +99,7 @@ public class CommonCommands {
 	public static final ArrayBuilder<ArrayList<String>, ArrayList<String>> STRINGS = new ArrayBuilder<ArrayList<String>,ArrayList<String>>(){
 		@Override
 		public ArrayList<String> begin() {
-			return new ArrayList<String>(32);
+			return new ArrayList<String>(INITIAL_CAPACITY);
 		}
 		@Override
 		public void hitString(ArrayList<String> obj, String value) {
@@ -101,6 +110,40 @@ public class CommonCommands {
 			return obj;
 		}
 	};
+	
+	public static <T> ArrayBuilder<ArrayList<T>, ArrayList<T>> arrayOfObjects(final ObjectBuilder<T, ?> builder) {
+		return new ArrayBuilder<ArrayList<T>, ArrayList<T>>() {
+			@Override
+			public ArrayList<T> begin() {
+				return new ArrayList<T>(INITIAL_CAPACITY);
+			}
+			@Override
+			public void hitObject(ArrayList<T> obj, ObjectReader reader) throws IOException {
+				obj.add(reader.read(builder));
+			}
+			@Override
+			public ArrayList<T> end(ArrayList<T> obj) {
+				return obj;
+			}
+		};
+	}
+	public static <T> ArrayBuilder<ArrayList<T>, ArrayList<T>> arrayOfArrays(final ArrayBuilder<T, ?> builder) {
+		return new ArrayBuilder<ArrayList<T>, ArrayList<T>>() {
+			@Override
+			public ArrayList<T> begin() {
+				return new ArrayList<T>(INITIAL_CAPACITY);
+			}
+			@Override
+			public void hitArray(ArrayList<T> obj, ArrayReader reader) throws IOException {
+				obj.add(reader.read(builder));
+			}
+			@Override
+			public ArrayList<T> end(ArrayList<T> obj) {
+				return obj;
+			}
+		};
+	}
+	
 	public static final ArrayBuilder<ArrayList<Object>, ArrayList<Object>> OBJECT_LIST = new ArrayBuilder<ArrayList<Object>, ArrayList<Object>>(){
 		@Override
 		public ArrayList<Object> begin() {

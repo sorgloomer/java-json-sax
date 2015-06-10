@@ -62,7 +62,7 @@ public class JsonSaxReader implements ArrayReader, ObjectReader {
 
 	private <Temp> void readMember(Temp obj, String key,
 			ObjectBuilder<?, Temp> builder) throws IOException {
-		this.readValue();
+		this.readValueInternal();
 		switch (this.hit_type) {
 		case 1:
 			builder.hitString(obj, key, this.hit_string);
@@ -88,9 +88,35 @@ public class JsonSaxReader implements ArrayReader, ObjectReader {
 		}
 	}
 
+	public void readValue(ValueCallback cb) throws IOException {
+		this.readValueInternal();
+		switch (this.hit_type) {
+		case 1:
+			cb.hitString(this.hit_string);
+			break;
+		case 2:
+			cb.hitArray(this);
+			break;
+		case 3:
+			cb.hitObject(this);
+			break;
+		case 4:
+			cb.hitBoolean(this.hit_boolean);
+			break;
+		case 5:
+			cb.hitNull();
+			break;
+		case 6:
+			cb.hitInt(this.hit_long);
+			break;
+		case 7:
+			cb.hitFloat(this.hit_double);
+			break;
+		}
+	}
 	private <Temp> void readItem(Temp obj, ArrayBuilder<?, Temp> builder)
 			throws IOException {
-		this.readValue();
+		this.readValueInternal();
 		switch (this.hit_type) {
 		case 1:
 			builder.hitString(obj, this.hit_string);
@@ -173,7 +199,7 @@ public class JsonSaxReader implements ArrayReader, ObjectReader {
 		}
 	}
 
-	private void readValue() throws IOException {
+	private void readValueInternal() throws IOException {
 		int c = this.eatWhitespace();
 		if (c < 0)
 			return;
